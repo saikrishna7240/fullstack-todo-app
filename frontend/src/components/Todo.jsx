@@ -97,7 +97,7 @@ function Todo() {
 
   return (
     <div>
-      <h1>Todo App</h1>
+      <h1>Todo Application</h1>
 
       <h3>Welcome Back, {username}</h3>
 
