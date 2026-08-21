@@ -2,16 +2,21 @@ const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const SECRET = "mysecretkey";
 
-const db = new sqlite3.Database("./todo.db");
+
+
+const db = new sqlite3.Database(
+  path.join(__dirname, "todo.db")
+);
 
 // Create tables
 db.serialize(() => {
@@ -202,5 +207,5 @@ app.delete("/todos/:id", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
