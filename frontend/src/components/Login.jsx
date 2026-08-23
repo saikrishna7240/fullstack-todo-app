@@ -11,7 +11,7 @@ function Login() {
     event.preventDefault();
 
     try {
-      const response = await fetch("https://fullstack-todo-app-qocm.onrender.com/login", {
+      const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,8 +34,8 @@ function Login() {
 
       navigate("/todo");
     } catch (error) {
-      alert("Server error");
       console.log(error);
+      alert("Server error. Make sure the backend is running.");
     }
   };
 
@@ -64,16 +64,12 @@ function Login() {
         <br />
         <br />
 
-        <button type="submit">
-          Login
-        </button>
+        <button type="submit">Login</button>
       </form>
 
       <p>
         Don't have an account?{" "}
-        <Link to="/register">
-          Register
-        </Link>
+        <Link to="/register">Register</Link>
       </p>
     </div>
   );
