@@ -10,7 +10,7 @@ function Todo() {
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
 
-  const API_URL = "http://localhost:5000";
+  const API_URL = "https://fullstack-todo-app-qocm.onrender.com";
 
   const getTodos = async () => {
     try {
