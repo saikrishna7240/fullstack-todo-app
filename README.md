@@ -11,7 +11,7 @@ A simple full-stack Todo application built with React, Node.js, Express.js, and 
 - Add Todos
 - Delete Todos
 - Logout
-- SQLite Database
+- PostgreSQL Database
 - React Frontend
 - Node.js + Express Backend
 - REST API
@@ -36,7 +36,7 @@ A simple full-stack Todo application built with React, Node.js, Express.js, and 
 
 ### Database
 
-- SQLite
+- PostgreSQL
 
 ## 📁 Project Structure
 
