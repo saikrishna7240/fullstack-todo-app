@@ -96,43 +96,55 @@ function Todo() {
   };
 
   return (
-    <div>
-      <h1>Todo Application</h1>
+  <div className="todo-container">
 
-      <h3>Welcome Back, {username}</h3>
+    <div className="todo-header">
+      <div>
+        <h1>My Todos</h1>
+        <p>Welcome, {username}</p>
+      </div>
 
-      <button onClick={logout}>
+      <button
+        className="logout-btn"
+        onClick={logout}
+      >
         Logout
       </button>
+    </div>
 
-      <hr />
-
+    <div className="todo-input">
       <input
         type="text"
-        placeholder="Enter todo"
+        placeholder="What needs to be done?"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
       />
 
       <button onClick={addTodo}>
-        Add Todo
+        Add
       </button>
-
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>
-            {todo.title}
-
-            <button
-              onClick={() => deleteTodo(todo.id)}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
     </div>
-  );
+
+    <ul className="todo-list">
+      {todos.map((todo) => (
+        <li
+          className="todo-item"
+          key={todo.id}
+        >
+          <span>{todo.title}</span>
+
+          <button
+            className="delete-btn"
+            onClick={() => deleteTodo(todo.id)}
+          >
+            Delete
+          </button>
+        </li>
+      ))}
+    </ul>
+
+  </div>
+);
 }
 
 export default Todo;

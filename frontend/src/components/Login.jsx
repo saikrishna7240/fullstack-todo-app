@@ -40,7 +40,8 @@ function Login() {
   };
 
   return (
-    <div>
+  <div className="auth-container">
+    <div className="auth-card">
       <h1>Login</h1>
 
       <form onSubmit={login}>
@@ -51,9 +52,6 @@ function Login() {
           onChange={(event) => setUsername(event.target.value)}
         />
 
-        <br />
-        <br />
-
         <input
           type="password"
           placeholder="Password"
@@ -61,18 +59,20 @@ function Login() {
           onChange={(event) => setPassword(event.target.value)}
         />
 
-        <br />
-        <br />
-
-        <button type="submit">Login</button>
+        <button type="submit">
+          Login
+        </button>
       </form>
 
       <p>
         Don't have an account?{" "}
-        <Link to="/register">Register</Link>
+        <Link to="/register">
+          Register
+        </Link>
       </p>
     </div>
-  );
+  </div>
+);
 }
 
 export default Login;
