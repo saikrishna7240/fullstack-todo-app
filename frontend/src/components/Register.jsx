@@ -1,164 +1,81 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-function Todo() {
-  const [todos, setTodos] = useState([]);
-  const [title, setTitle] = useState("");
+function Register() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("token");
-  const username = localStorage.getItem("username");
+  const register = async (event) => {
+    event.preventDefault();
 
-  const API_URL = "http://localhost:5000";
-
-  // Get todos
-  const getTodos = async () => {
     try {
-      const response = await fetch(`${API_URL}/todos`, {
+      const response = await fetch("http://localhost:5000/register", {
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
       });
-
-      if (response.status === 401) {
-        localStorage.clear();
-        navigate("/login");
-        return;
-      }
 
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.message || "Failed to get todos");
+        alert(data.message);
         return;
       }
 
-      setTodos(data);
-    } catch (error) {
-      console.log(error);
-      alert("Cannot connect to server");
-    }
-  };
+      alert("Registration successful!");
 
-  useEffect(() => {
-    if (!token) {
       navigate("/login");
-      return;
-    }
-
-    getTodos();
-  }, []);
-
-  // Add todo
-  const addTodo = async () => {
-    if (!title.trim()) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_URL}/todos`, {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-
-        body: JSON.stringify({
-          title,
-        }),
-      });
-
-      const newTodo = await response.json();
-
-      if (!response.ok) {
-        alert(newTodo.message || "Failed to add todo");
-        return;
-      }
-
-      setTodos((previousTodos) => [
-        ...previousTodos,
-        newTodo,
-      ]);
-
-      setTitle("");
     } catch (error) {
       console.log(error);
-      alert("Cannot connect to server");
+      alert("Server error. Make sure the backend is running.");
     }
-  };
-
-  // Delete todo
-  const deleteTodo = async (id) => {
-    try {
-      const response = await fetch(`${API_URL}/todos/${id}`, {
-        method: "DELETE",
-
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        alert(data.message || "Failed to delete todo");
-        return;
-      }
-
-      setTodos((previousTodos) =>
-        previousTodos.filter((todo) => todo.id !== id)
-      );
-    } catch (error) {
-      console.log(error);
-      alert("Cannot connect to server");
-    }
-  };
-
-  // Logout
-  const logout = () => {
-    localStorage.clear();
-    navigate("/login");
   };
 
   return (
     <div>
-      <h1>Todo Application</h1>
+      <h1>Register</h1>
 
-      <h3>Welcome Back, {username}</h3>
+      <form onSubmit={register}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+        />
 
-      <button onClick={logout}>
-        Logout
-      </button>
+        <br />
+        <br />
 
-      <hr />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
 
-      <input
-        type="text"
-        placeholder="Enter todo"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-      />
+        <br />
+        <br />
 
-      <button onClick={addTodo}>
-        Add Todo
-      </button>
+        <button type="submit">
+          Register
+        </button>
+      </form>
 
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>
-            {todo.title}
-
-            <button
-              onClick={() => deleteTodo(todo.id)}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      <p>
+        Already have an account?{" "}
+        <Link to="/login">
+          Login
+        </Link>
+      </p>
     </div>
   );
 }
 
-export default Todo;
+export default Register;
