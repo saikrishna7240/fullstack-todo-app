@@ -10,17 +10,25 @@ function Register() {
   const register = async (event) => {
     event.preventDefault();
 
+    if (!username.trim() || !password.trim()) {
+      alert("Please enter username and password");
+      return;
+    }
+
     try {
-      const response = await fetch("https://fullstack-todo-app-qocm.onrender.com/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
+      const response = await fetch(
+        "https://fullstack-todo-app-qocm.onrender.com/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            password,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -34,46 +42,50 @@ function Register() {
       navigate("/login");
     } catch (error) {
       console.log(error);
-      alert("Server error. Make sure the backend is running.");
+      alert("Server error. Please try again.");
     }
   };
 
   return (
-    <div>
-      <h1>Register</h1>
+    <div className="auth-container">
+      <div className="auth-card">
 
-      <form onSubmit={register}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(event) => setUsername(event.target.value)}
-        />
+        <h1>Register</h1>
 
-        <br />
-        <br />
+        <form onSubmit={register}>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(event) =>
+              setUsername(event.target.value)
+            }
+          />
 
-        <br />
-        <br />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(event) =>
+              setPassword(event.target.value)
+            }
+          />
 
-        <button type="submit">
-          Register
-        </button>
-      </form>
+          <button type="submit">
+            Register
+          </button>
 
-      <p>
-        Already have an account?{" "}
-        <Link to="/login">
-          Login
-        </Link>
-      </p>
+        </form>
+
+        <p>
+          Already have an account?{" "}
+          <Link to="/login">
+            Login
+          </Link>
+        </p>
+
+      </div>
     </div>
   );
 }

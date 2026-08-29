@@ -11,7 +11,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -19,7 +20,9 @@ button {
   cursor: pointer;
 }
 
-/* Login / Register */
+/* =========================
+   AUTH
+========================= */
 
 .auth-container {
   min-height: 100vh;
@@ -51,7 +54,7 @@ button {
 
 .auth-card input {
   width: 100%;
-  padding: 13px 15px;
+  padding: 14px;
   border: 1px solid #ddd;
   border-radius: 10px;
   outline: none;
@@ -62,7 +65,7 @@ button {
 }
 
 .auth-card button {
-  padding: 13px;
+  padding: 14px;
   border: none;
   border-radius: 10px;
   background: #222;
@@ -79,54 +82,140 @@ button {
   font-weight: bold;
 }
 
-/* Todo */
+/* =========================
+   TODO CONTAINER
+========================= */
 
 .todo-container {
   width: 100%;
-  max-width: 650px;
+  max-width: 750px;
   margin: 0 auto;
   padding: 30px 20px;
 }
+
+/* =========================
+   HEADER
+========================= */
 
 .todo-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 15px;
   margin-bottom: 25px;
 }
 
 .todo-header h1 {
-  font-size: 28px;
+  font-size: 30px;
+  margin-bottom: 6px;
+}
+
+.todo-header p {
+  color: #777;
 }
 
 .logout-btn {
-  padding: 9px 15px;
   border: none;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 9px;
   background: #222;
   color: white;
 }
 
-.todo-input {
-  display: flex;
-  gap: 10px;
+/* =========================
+   FORM
+========================= */
+
+.todo-form {
+  background: white;
+  padding: 22px;
+  border-radius: 16px;
   margin-bottom: 25px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
 }
 
-.todo-input input {
-  flex: 1;
+.todo-form h2 {
+  font-size: 20px;
+  margin-bottom: 18px;
+}
+
+.todo-form > input,
+.todo-form select {
+  width: 100%;
   padding: 13px;
   border: 1px solid #ddd;
   border-radius: 10px;
   outline: none;
+  margin-bottom: 15px;
+  background: white;
 }
 
-.todo-input button {
-  padding: 13px 20px;
+.todo-form input:focus,
+.todo-form select:focus {
+  border-color: #555;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.form-row div {
+  min-width: 0;
+}
+
+.todo-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 7px;
+  color: #555;
+}
+
+.form-row input,
+.form-row select {
+  width: 100%;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  outline: none;
+  background: white;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.primary-btn,
+.cancel-btn {
+  flex: 1;
+  padding: 13px;
   border: none;
   border-radius: 10px;
+}
+
+.primary-btn {
   background: #222;
   color: white;
+}
+
+.cancel-btn {
+  background: #eee;
+  color: #222;
+}
+
+/* =========================
+   TODO LIST
+========================= */
+
+.todo-count {
+  color: #777;
+  margin-bottom: 12px;
+  font-size: 14px;
 }
 
 .todo-list {
@@ -138,17 +227,179 @@ button {
 
 .todo-item {
   background: white;
-  padding: 16px;
-  border-radius: 12px;
+  border-radius: 14px;
+  padding: 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  gap: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.todo-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.todo-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.todo-title-row h3 {
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+
+.priority-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.priority-dot.high {
+  background: #d93025;
+}
+
+.priority-dot.medium {
+  background: #f9ab00;
+}
+
+.priority-dot.low {
+  background: #34a853;
+}
+
+.todo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.priority-badge,
+.status-badge {
+  font-size: 12px;
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.priority-badge.high {
+  background: #fde8e7;
+  color: #b42318;
+}
+
+.priority-badge.medium {
+  background: #fff4d6;
+  color: #9a6700;
+}
+
+.priority-badge.low {
+  background: #e7f6ec;
+  color: #267a3d;
+}
+
+.status-badge.yet-to-do {
+  background: #eee;
+  color: #555;
+}
+
+.status-badge.in-progress {
+  background: #e8f0fe;
+  color: #315ea8;
+}
+
+.status-badge.completed {
+  background: #e7f6ec;
+  color: #267a3d;
+}
+
+.todo-time {
+  margin-top: 9px;
+  font-size: 13px;
+  color: #777;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 9px 12px;
+  border-radius: 8px;
+}
+
+.edit-btn {
+  background: #eee;
+  color: #222;
 }
 
 .delete-btn {
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: #eee;
+  background: #f8e5e5;
+  color: #a22;
+}
+
+.empty-state {
+  background: white;
+  padding: 40px 20px;
+  text-align: center;
+  border-radius: 14px;
+  color: #777;
+}
+
+.empty-state h3 {
+  color: #333;
+  margin-bottom: 8px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+  .todo-container {
+    padding: 20px 14px;
+  }
+
+  .todo-header {
+    align-items: flex-start;
+  }
+
+  .todo-header h1 {
+    font-size: 25px;
+  }
+
+  .todo-form {
+    padding: 18px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .todo-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .todo-actions {
+    width: 100%;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    flex: 1;
+    padding: 11px;
+  }
+
+  .auth-card {
+    padding: 28px 22px;
+  }
 }
