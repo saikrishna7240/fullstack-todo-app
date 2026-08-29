@@ -7,8 +7,9 @@ const API_URL =
   "https://fullstack-todo-app-qocm.onrender.com";
 
 function Todo() {
-  const [todos, setTodos] = useState([]);
+  const navigate = useNavigate();
 
+  const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [dueTime, setDueTime] = useState("");
@@ -19,10 +20,8 @@ function Todo() {
   const [token, setToken] = useState("");
   const [username, setUsername] = useState("");
 
-  const navigate = useNavigate();
-
   // =========================
-  // LOAD SAVED LOGIN
+  // LOAD LOGIN
   // =========================
 
   useEffect(() => {
@@ -44,9 +43,9 @@ function Todo() {
         setToken(tokenResult.value);
         setUsername(usernameResult.value || "");
 
-        await getTodos(tokenResult.value);
+        getTodos(tokenResult.value);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         navigate("/login");
       }
     };
@@ -74,13 +73,13 @@ function Todo() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.message || "Failed to get todos");
+        alert(data.message || "Failed to load todos");
         return;
       }
 
       setTodos(data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Cannot connect to server");
     }
   };
@@ -94,23 +93,15 @@ function Todo() {
       const permission =
         await LocalNotifications.requestPermissions();
 
-      if (permission.display !== "granted") {
-        alert(
-          "Please allow notifications to receive Todo reminders."
-        );
-
-        return false;
-      }
-
-      return true;
+      return permission.display === "granted";
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return false;
     }
   };
 
   // =========================
-  // SCHEDULE NOTIFICATION
+  // SCHEDULE REMINDER
   // =========================
 
   const scheduleReminder = async (todo) => {
@@ -118,13 +109,13 @@ function Todo() {
       return;
     }
 
-    const reminderDate = new Date(todo.due_time);
+    const date = new Date(todo.due_time);
 
-    if (isNaN(reminderDate.getTime())) {
+    if (isNaN(date.getTime())) {
       return;
     }
 
-    if (reminderDate <= new Date()) {
+    if (date <= new Date()) {
       return;
     }
 
@@ -143,28 +134,27 @@ function Todo() {
           },
         ],
       });
-    } catch (error) {
-      console.log(error);
-    }
 
-    try {
       await LocalNotifications.schedule({
         notifications: [
           {
             id: Number(todo.id),
             title: "Todo Reminder",
-            body: `${todo.title} • ${
+            body: `${todo.title} - ${
               todo.priority || "Medium"
             } priority`,
             schedule: {
-              at: reminderDate,
+              at: date,
               allowWhileIdle: true,
             },
           },
         ],
       });
     } catch (error) {
-      console.log(error);
+      console.error(
+        "Notification error:",
+        error
+      );
     }
   };
 
@@ -179,43 +169,47 @@ function Todo() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/todos`, {
-        method: "POST",
+      const response = await fetch(
+        `${API_URL}/todos`,
+        {
+          method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
 
-        body: JSON.stringify({
-          title: title.trim(),
-          priority,
-          due_time: dueTime
-            ? new Date(dueTime).toISOString()
-            : null,
-          status,
-        }),
-      });
+          body: JSON.stringify({
+            title: title.trim(),
+            priority,
+            due_time: dueTime
+              ? new Date(dueTime).toISOString()
+              : null,
+            status,
+          }),
+        }
+      );
 
-      const newTodo = await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
         alert(
-          newTodo.message || "Failed to add Todo"
+          data.message ||
+            "Failed to add Todo"
         );
         return;
       }
 
       setTodos((previousTodos) => [
+        data,
         ...previousTodos,
-        newTodo,
       ]);
 
-      await scheduleReminder(newTodo);
+      await scheduleReminder(data);
 
       clearForm();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Cannot connect to server");
     }
   };
@@ -249,8 +243,6 @@ function Todo() {
           .slice(0, 16);
 
         setDueTime(localDate);
-      } else {
-        setDueTime("");
       }
     } else {
       setDueTime("");
@@ -267,6 +259,10 @@ function Todo() {
   // =========================
 
   const updateTodo = async () => {
+    if (!editingId) {
+      return;
+    }
+
     if (!title.trim()) {
       alert("Please enter a Todo");
       return;
@@ -294,12 +290,11 @@ function Todo() {
         }
       );
 
-      const updatedTodo =
-        await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
         alert(
-          updatedTodo.message ||
+          data.message ||
             "Failed to update Todo"
         );
         return;
@@ -307,17 +302,22 @@ function Todo() {
 
       setTodos((previousTodos) =>
         previousTodos.map((todo) =>
-          todo.id === editingId
-            ? updatedTodo
+          Number(todo.id) ===
+          Number(editingId)
+            ? data
             : todo
         )
       );
 
-      await scheduleReminder(updatedTodo);
+      await scheduleReminder(data);
 
       clearForm();
     } catch (error) {
-      console.log(error);
+      console.error(
+        "UPDATE ERROR:",
+        error
+      );
+
       alert("Cannot connect to server");
     }
   };
@@ -339,14 +339,13 @@ function Todo() {
         }
       );
 
-      if (!response.ok) {
-        const data = await response.json();
+      const data = await response.json();
 
+      if (!response.ok) {
         alert(
           data.message ||
             "Failed to delete Todo"
         );
-
         return;
       }
 
@@ -359,16 +358,17 @@ function Todo() {
           ],
         });
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
 
       setTodos((previousTodos) =>
         previousTodos.filter(
-          (todo) => todo.id !== id
+          (todo) =>
+            Number(todo.id) !== Number(id)
         )
       );
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Cannot connect to server");
     }
   };
@@ -408,9 +408,8 @@ function Todo() {
   return (
     <div className="todo-container">
 
-      {/* HEADER */}
-
       <div className="todo-header">
+
         <div>
           <h1>My Todos</h1>
 
@@ -426,9 +425,10 @@ function Todo() {
         >
           Logout
         </button>
+
       </div>
 
-      {/* ADD / EDIT */}
+      {/* FORM */}
 
       <div className="todo-form">
 
@@ -457,7 +457,9 @@ function Todo() {
             <select
               value={priority}
               onChange={(event) =>
-                setPriority(event.target.value)
+                setPriority(
+                  event.target.value
+                )
               }
             >
               <option value="Low">
@@ -476,14 +478,16 @@ function Todo() {
 
           <div>
             <label>
-              Reminder
+              Reminder Time
             </label>
 
             <input
               type="datetime-local"
               value={dueTime}
               onChange={(event) =>
-                setDueTime(event.target.value)
+                setDueTime(
+                  event.target.value
+                )
               }
             />
           </div>
@@ -497,7 +501,9 @@ function Todo() {
         <select
           value={status}
           onChange={(event) =>
-            setStatus(event.target.value)
+            setStatus(
+              event.target.value
+            )
           }
         >
           <option value="Yet to Do">
@@ -555,21 +561,23 @@ function Todo() {
         {todos.length === 0 ? (
           <div className="empty-state">
             <h3>No Todos yet</h3>
-
             <p>
               Add your first task above.
             </p>
           </div>
         ) : (
+
           <ul className="todo-list">
 
             {todos.map((todo) => {
 
               const todoPriority =
-                todo.priority || "Medium";
+                todo.priority ||
+                "Medium";
 
               const todoStatus =
-                todo.status || "Yet to Do";
+                todo.status ||
+                "Yet to Do";
 
               const priorityClass =
                 todoPriority.toLowerCase();
@@ -580,6 +588,7 @@ function Todo() {
                   .replace(/\s+/g, "-");
 
               return (
+
                 <li
                   className="todo-item"
                   key={todo.id}
@@ -591,7 +600,7 @@ function Todo() {
 
                       <span
                         className={`priority-dot ${priorityClass}`}
-                      ></span>
+                      />
 
                       <h3>
                         {todo.title}
@@ -649,10 +658,12 @@ function Todo() {
                   </div>
 
                 </li>
+
               );
             })}
 
           </ul>
+
         )}
 
       </div>
